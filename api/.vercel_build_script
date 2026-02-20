@@ -1,0 +1,5 @@
+#!/bin/bash
+# Custom build script for Vercel Python with uv
+
+echo "Installing Python dependencies with uv..."
+uv pip install -r requirements.txt --system
