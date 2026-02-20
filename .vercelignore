@@ -1,0 +1,40 @@
+# Ignore backend directory (code is in api/)
+backend/
+
+# Ignore bot
+bot/
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Ignore Node modules (will be installed by Vercel)
+node_modules/
+
+# Ignore env files
+.env
+.env.local
+.env.production
+
+# Ignore database
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore docs
+DEPLOYMENT.md
+DEPLOY_INSTRUCTIONS.md
+QUICK_START.md
+README.md
