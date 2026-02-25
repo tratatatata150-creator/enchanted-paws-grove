@@ -1,10 +1,10 @@
-run = "bash start-replit.sh"
+run = "bash replit-deploy.sh"
 
 [nix]
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "bash start-replit.sh"]
+run = ["sh", "-c", "bash replit-deploy.sh"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
