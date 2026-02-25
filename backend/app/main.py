@@ -59,15 +59,30 @@ def health():
 
 # Serve static files from frontend/dist (production build)
 FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
+FRONTEND_INDEX = FRONTEND_DIST / "index.html"
+FRONTEND_ASSETS = FRONTEND_DIST / "assets"
 
-if FRONTEND_DIST.exists():
+# Check if frontend is fully built
+frontend_ready = (
+    FRONTEND_DIST.exists()
+    and FRONTEND_INDEX.exists()
+    and FRONTEND_ASSETS.exists()
+)
+
+if frontend_ready:
     # Mount static assets
-    app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
+    try:
+        app.mount("/assets", StaticFiles(directory=FRONTEND_ASSETS), name="assets")
+        print(f"✅ Serving frontend from {FRONTEND_DIST}")
+    except Exception as e:
+        print(f"⚠️ Failed to mount assets: {e}")
+        frontend_ready = False
 
+if frontend_ready:
     @app.get("/")
     def root():
         """Serve the React app"""
-        return FileResponse(FRONTEND_DIST / "index.html")
+        return FileResponse(FRONTEND_INDEX)
 
     @app.get("/{full_path:path}")
     def serve_frontend(full_path: str):
@@ -76,8 +91,20 @@ if FRONTEND_DIST.exists():
         if file_path.exists() and file_path.is_file():
             return FileResponse(file_path)
         # Fallback to index.html for SPA routing
-        return FileResponse(FRONTEND_DIST / "index.html")
+        return FileResponse(FRONTEND_INDEX)
 else:
     @app.get("/")
     def root():
-        return {"message": "Enchanted Paws Grove Backend 🌿", "note": "Frontend not built. Run: cd frontend && npm run build"}
+        status_msg = "Frontend not built."
+        if FRONTEND_DIST.exists():
+            status_msg += f" dist/ exists but incomplete."
+        if not FRONTEND_INDEX.exists():
+            status_msg += " Missing index.html."
+        if not FRONTEND_ASSETS.exists():
+            status_msg += " Missing assets/."
+
+        return {
+            "message": "Enchanted Paws Grove Backend 🌿",
+            "status": status_msg,
+            "action": "Run: cd frontend && npm install && npm run build"
+        }
