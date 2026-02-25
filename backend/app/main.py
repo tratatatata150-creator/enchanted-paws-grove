@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
 from .config import get_settings
 from .database import init_db
 from .routes import auth, game, shop, quests, payments, referral
@@ -15,6 +18,7 @@ app = FastAPI(
 )
 
 # CORS — allow Telegram Mini App origin
+# Note: When serving frontend from same domain, CORS is not needed for those requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -28,6 +32,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Include routers (all under /api prefix)
@@ -52,6 +57,27 @@ def health():
     return {"status": "ok", "game": "Enchanted Paws Grove", "version": "1.0.0"}
 
 
-@app.get("/")
-def root():
-    return {"message": "Enchanted Paws Grove Backend 🌿"}
+# Serve static files from frontend/dist (production build)
+FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
+
+if FRONTEND_DIST.exists():
+    # Mount static assets
+    app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
+
+    @app.get("/")
+    def root():
+        """Serve the React app"""
+        return FileResponse(FRONTEND_DIST / "index.html")
+
+    @app.get("/{full_path:path}")
+    def serve_frontend(full_path: str):
+        """Catch-all route to serve React app for client-side routing"""
+        file_path = FRONTEND_DIST / full_path
+        if file_path.exists() and file_path.is_file():
+            return FileResponse(file_path)
+        # Fallback to index.html for SPA routing
+        return FileResponse(FRONTEND_DIST / "index.html")
+else:
+    @app.get("/")
+    def root():
+        return {"message": "Enchanted Paws Grove Backend 🌿", "note": "Frontend not built. Run: cd frontend && npm run build"}
