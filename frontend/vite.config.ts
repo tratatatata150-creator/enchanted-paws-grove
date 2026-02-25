@@ -20,7 +20,9 @@ export default defineConfig({
     },
   },
   server: {
+    host: true, // Allow external access (for Replit, etc.)
     port: 5173,
+    strictPort: false,
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
