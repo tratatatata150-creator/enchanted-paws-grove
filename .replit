@@ -1,11 +1,7 @@
-run = "bash replit-deploy.sh"
+run = "bash run-simple.sh"
 
 [nix]
 channel = "stable-24_05"
-
-[deployment]
-run = ["sh", "-c", "bash replit-deploy.sh"]
-deploymentTarget = "cloudrun"
 
 [[ports]]
 localPort = 8000
