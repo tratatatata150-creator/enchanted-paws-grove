@@ -43,6 +43,8 @@ export interface AuthResponse {
   gameState: GameState
   isNewUser: boolean
   referralCode: string
+  createdAt: number
+  lastSeen: number
 }
 
 export async function authTelegram(startParam?: string): Promise<ApiResponse<AuthResponse>> {
