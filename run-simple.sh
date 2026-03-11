@@ -13,6 +13,6 @@ if [ ! -d "frontend/dist" ]; then
 fi
 
 # Start
-echo "🚀 Server starting on port 8000..."
+echo "🚀 Server starting on port 3000..."
 cd backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --host 0.0.0.0 --port 3000
